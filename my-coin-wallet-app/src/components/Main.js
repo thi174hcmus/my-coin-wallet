@@ -1,5 +1,5 @@
-import React from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { BrowserRouter as Router, Switch, Route, Link, Redirect } from "react-router-dom";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
@@ -9,29 +9,31 @@ import AddWallets from "./AddWallets";
 import AccessWallets from "./AccessWallets";
 import SendCoins from "./SendCoins";
 import Transactions from "./Transactions";
+import { StoreContext } from '../utils/store';
 
 export default function Main() {
-  const isAuthenticated = true;
+  const store = useContext(StoreContext);
+
   return (
     <div>
       <CssBaseline />
       <Container fixed>
-        {/* A <Switch> looks through its children <Route>s and
-              renders the first one that matches the current URL. */}
         <Switch>
           <Route path="/new">
-            <AddWallets />
+          {store.loggedIn ? <Redirect to="/" /> : <AddWallets />}
           </Route>
           <Route path="/access">
-            <AccessWallets />
+          {store.loggedIn ? <Redirect to="/" /> : <AccessWallets />}
           </Route>
           <Route path="/send">
-            <SendCoins />
+          {store.loggedIn ? <SendCoins /> : <Redirect to="/" />}
           </Route>
-          <Route path="/transactions">
-            <Transactions />
+          <Route path="/wallet/:address">
+          {store.loggedIn ? <Transactions /> : <Redirect to="/" />}
           </Route>
-          <Route path="/">{isAuthenticated ? <Dashboard /> : <Home />}</Route>
+          <Route path="/">
+          {store.loggedIn ? <Dashboard /> : <Home />
+          }</Route>
         </Switch>
       </Container>
     </div>
